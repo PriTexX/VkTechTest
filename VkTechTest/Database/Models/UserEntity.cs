@@ -25,6 +25,12 @@ public class UserEntity
     [Column("user_group_id")]
     public long UserGroupId { get; set; }
     
+    [ForeignKey(nameof(UserGroupId))]
+    public UserGroupEntity UserGroup { get; set; }
+    
     [Column("user_state_id")]
-    public long UserStateId { get; set; } 
+    public long UserStateId { get; set; }
+    
+    [ForeignKey(nameof(UserStateId))]
+    public UserStateEntity UserState { get; set; }
 }

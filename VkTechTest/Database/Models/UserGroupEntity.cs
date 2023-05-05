@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 using VkTechTest.Models.Enums;
 
 namespace VkTechTest.Database.Models;
 
 [Table("user_group")]
+[Index(nameof(Code), IsUnique = true)]
 public class UserGroupEntity
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
