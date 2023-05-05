@@ -20,7 +20,7 @@ public class UserEntity
     public string Password { get; set; }
     
     [Column("created_date", TypeName = "date")]
-    public DateTimeOffset CreatedDate { get; set; }
+    public DateTime CreatedDate { get; set; }
     
     [Column("user_group_id")]
     public long UserGroupId { get; set; }
