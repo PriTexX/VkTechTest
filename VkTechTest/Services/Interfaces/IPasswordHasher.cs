@@ -1,6 +1,6 @@
 ﻿namespace VkTechTest.Services.Interfaces;
 
-internal interface IPasswordHasher
+public interface IPasswordHasher
 {
     public string GetHash(string password);
 

@@ -3,7 +3,7 @@ using VkTechTest.Services.Interfaces;
 
 namespace VkTechTest.Services.Implementations;
 
-internal sealed class SHA256PasswordHasher : IPasswordHasher
+public sealed class SHA256PasswordHasher : IPasswordHasher
 {
     private const int SaltSize = 16;
     private const int KeySize = 32;
