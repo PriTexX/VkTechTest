@@ -19,7 +19,8 @@ public class UserEntity
     [Column("password")]
     public string Password { get; set; }
     
-    [Column("created_date", TypeName = "date")]
+    [Column("created_date")]
+    [Required, DatabaseGenerated(DatabaseGeneratedOption.Computed)]
     public DateTime CreatedDate { get; set; }
     
     [Column("user_group_id")]

@@ -97,11 +97,11 @@ namespace VkTechTest.Migrations
                 column: "code",
                 unique: true);
             
-            migrationBuilder.Sql("INSERT INTO user_group (code, description) VALUES (0, 'Admin group')");
-            migrationBuilder.Sql("INSERT INTO user_group (code, description) VALUES (1, 'User group')");
+            migrationBuilder.Sql("INSERT INTO user_group (id, code, description) VALUES (0, 0, 'Admin group')");
+            migrationBuilder.Sql("INSERT INTO user_group (id, code, description) VALUES (1, 1, 'User group')");
             
-            migrationBuilder.Sql("INSERT INTO user_state (code, description) VALUES (0, 'Active user state')");
-            migrationBuilder.Sql("INSERT INTO user_state (code, description) VALUES (1, 'Blocked user state')");
+            migrationBuilder.Sql("INSERT INTO user_state (id, code, description) VALUES (0, 0, 'Active user state')");
+            migrationBuilder.Sql("INSERT INTO user_state (id, code, description) VALUES (1, 1, 'Blocked user state')");
         }
 
         /// <inheritdoc />
