@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using VkTechTest.Models.Enums;
 
 #nullable disable
 
@@ -96,12 +97,18 @@ namespace VkTechTest.Migrations
                 table: "user_state",
                 column: "code",
                 unique: true);
+
+            int adminGroupNumber = (int)UserGroupType.Admin;
+            int userGroupNumber = (int)UserGroupType.User;
+
+            int activeUserStateNumber = (int)UserStateType.Active;
+            int blockedUserStateNumber = (int)UserStateType.Blocked;
             
-            migrationBuilder.Sql("INSERT INTO user_group (id, code, description) VALUES (0, 0, 'Admin group')");
-            migrationBuilder.Sql("INSERT INTO user_group (id, code, description) VALUES (1, 1, 'User group')");
+            migrationBuilder.Sql($"INSERT INTO user_group (id, code, description) VALUES ({adminGroupNumber}, {adminGroupNumber}, 'Admin group')");
+            migrationBuilder.Sql($"INSERT INTO user_group (id, code, description) VALUES ({userGroupNumber}, {userGroupNumber}, 'User group')");
             
-            migrationBuilder.Sql("INSERT INTO user_state (id, code, description) VALUES (0, 0, 'Active user state')");
-            migrationBuilder.Sql("INSERT INTO user_state (id, code, description) VALUES (1, 1, 'Blocked user state')");
+            migrationBuilder.Sql($"INSERT INTO user_state (id, code, description) VALUES ({activeUserStateNumber}, {activeUserStateNumber}, 'Active user state')");
+            migrationBuilder.Sql($"INSERT INTO user_state (id, code, description) VALUES ({blockedUserStateNumber}, {blockedUserStateNumber}, 'Blocked user state')");
         }
 
         /// <inheritdoc />
