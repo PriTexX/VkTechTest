@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using VkTechTest.Database;
 using VkTechTest.Database.Models;
+using VkTechTest.Models.Enums;
 using VkTechTest.Models.Exceptions;
 using VkTechTest.Repositories.Interfaces;
 
@@ -62,11 +63,18 @@ public sealed class UserRepository : IUserRepository
 
     public async Task DeleteUserByLoginAsync(string login)
     {
-        var rowsDeleted = await _applicationContext.Users
+        var blockedStateId = await _applicationContext.UserStates
+            .AsNoTracking()
+            .Where(s => s.Code == UserStateType.Blocked)
+            .Select(u => u.Id)
+            .FirstAsync(); // Если в базе не окажется стейта Blocked, то в таком случае это исключительная ситуация. Приложение залогирует ошибку, вернет пользователю 500 код и продолжит дальше обрабатывать запросы
+        
+        var rowsAffected = await _applicationContext.Users
             .Where(u => u.Login == login)
-            .ExecuteDeleteAsync();
+            .ExecuteUpdateAsync(p => p
+                .SetProperty(u => u.UserStateId, blockedStateId));
 
-        if (rowsDeleted == 0)
+        if (rowsAffected == 0)
         {
             throw new UserNotFoundException(login);
         }
