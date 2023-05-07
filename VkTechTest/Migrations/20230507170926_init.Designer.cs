@@ -12,7 +12,7 @@ using VkTechTest.Database;
 namespace VkTechTest.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20230505201634_init")]
+    [Migration("20230507170926_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -35,7 +35,8 @@ namespace VkTechTest.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("date")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_date");
 
                     b.Property<string>("Login")
@@ -65,7 +66,7 @@ namespace VkTechTest.Migrations
 
                     b.HasIndex("UserStateId");
 
-                    b.ToTable("user");
+                    b.ToTable("users");
                 });
 
             modelBuilder.Entity("VkTechTest.Database.Models.UserGroupEntity", b =>
@@ -91,7 +92,7 @@ namespace VkTechTest.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("user_group");
+                    b.ToTable("user_groups");
                 });
 
             modelBuilder.Entity("VkTechTest.Database.Models.UserStateEntity", b =>
@@ -117,7 +118,7 @@ namespace VkTechTest.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("user_state");
+                    b.ToTable("user_states");
                 });
 
             modelBuilder.Entity("VkTechTest.Database.Models.UserEntity", b =>
