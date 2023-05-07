@@ -59,4 +59,16 @@ public sealed class UserRepository : IUserRepository
             yield return user;
         }
     }
+
+    public async Task DeleteUserByLoginAsync(string login)
+    {
+        var rowsDeleted = await _applicationContext.Users
+            .Where(u => u.Login == login)
+            .ExecuteDeleteAsync();
+
+        if (rowsDeleted == 0)
+        {
+            throw new UserNotFoundException(login);
+        }
+    }
 }

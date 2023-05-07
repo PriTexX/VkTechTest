@@ -11,4 +11,6 @@ public interface IUserRepository
     public Task<UserEntity?> GetUserWithStateAndGroupByLoginAsync(string login);
 
     public IAsyncEnumerable<UserEntity> GetAllUsersWithStateAndGroupAsync();
+
+    public Task DeleteUserByLoginAsync(string login);
 }
