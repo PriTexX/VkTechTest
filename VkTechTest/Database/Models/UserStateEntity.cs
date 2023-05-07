@@ -5,7 +5,7 @@ using VkTechTest.Models.Enums;
 
 namespace VkTechTest.Database.Models;
 
-[Table("user_state")]
+[Table("user_states")]
 [Index(nameof(Code), IsUnique = true)]
 public class UserStateEntity
 {

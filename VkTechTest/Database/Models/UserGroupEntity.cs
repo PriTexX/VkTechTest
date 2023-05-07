@@ -5,7 +5,7 @@ using VkTechTest.Models.Enums;
 
 namespace VkTechTest.Database.Models;
 
-[Table("user_group")]
+[Table("user_groups")]
 [Index(nameof(Code), IsUnique = true)]
 public class UserGroupEntity
 {

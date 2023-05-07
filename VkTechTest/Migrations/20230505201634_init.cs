@@ -116,7 +116,7 @@ namespace VkTechTest.Migrations
             var adminLogin = "admin";
 
             migrationBuilder.Sql(
-                $"INSERT INTO users (login, password, user_group_id, user_state_id) VALUES ({adminLogin}, {hashedPassword}, {adminGroupNumber}, {activeUserStateNumber})");
+                $"INSERT INTO user (login, password, user_group_id, user_state_id) VALUES ('{adminLogin}', '{hashedPassword}', {adminGroupNumber}, {activeUserStateNumber})");
         }
 
         /// <inheritdoc />

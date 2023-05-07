@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace VkTechTest.Database.Models;
 
-[Table("user")]
+[Table("users")]
 [Index(nameof(Login), IsUnique = true)]
 public class UserEntity
 {

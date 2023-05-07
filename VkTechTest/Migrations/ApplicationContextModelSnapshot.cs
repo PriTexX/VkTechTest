@@ -63,7 +63,7 @@ namespace VkTechTest.Migrations
 
                     b.HasIndex("UserStateId");
 
-                    b.ToTable("user");
+                    b.ToTable("users");
                 });
 
             modelBuilder.Entity("VkTechTest.Database.Models.UserGroupEntity", b =>
@@ -89,7 +89,7 @@ namespace VkTechTest.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("user_group");
+                    b.ToTable("user_groups");
                 });
 
             modelBuilder.Entity("VkTechTest.Database.Models.UserStateEntity", b =>
@@ -115,7 +115,7 @@ namespace VkTechTest.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("user_state");
+                    b.ToTable("user_states");
                 });
 
             modelBuilder.Entity("VkTechTest.Database.Models.UserEntity", b =>
