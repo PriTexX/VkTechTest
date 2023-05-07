@@ -41,7 +41,7 @@ public sealed class UserService : IUserService
 
     public async Task<UserEntity?> AuthenticateAsync(string login, string password)
     {
-        var user = await _userRepository.GetUserByLoginAsync(login);
+        var user = await _userRepository.GetUserWithStateAndGroupByLoginAsync(login);
 
         if (user is null)
         {
