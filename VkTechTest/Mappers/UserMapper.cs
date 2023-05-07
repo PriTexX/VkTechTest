@@ -13,7 +13,9 @@ public static class UserMapper
             CreatedDate = dbUser.CreatedDate,
             Login = dbUser.Login,
             UserGroup = dbUser.UserGroup.Code,
-            UserState = dbUser.UserState.Code
+            GroupDescription = dbUser.UserGroup.Description,
+            UserState = dbUser.UserState.Code,
+            StateDescription = dbUser.UserState.Description
         };
     }
 

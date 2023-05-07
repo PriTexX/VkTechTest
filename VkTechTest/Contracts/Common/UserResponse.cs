@@ -16,7 +16,13 @@ public sealed class UserResponse
     
     [JsonPropertyName("user_state")]
     public required UserStateType UserState { get; init; }
-
+    
+    [JsonPropertyName("user_state_description")]
+    public required string StateDescription { get; init; }
+    
     [JsonPropertyName("user_group")]
     public required UserGroupType UserGroup { get; init; }
+    
+    [JsonPropertyName("user_group_description")]
+    public required string GroupDescription { get; init; }
 }
