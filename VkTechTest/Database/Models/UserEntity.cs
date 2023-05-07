@@ -14,23 +14,23 @@ public class UserEntity
     public long Id { get; set; }
     
     [Column("login")]
-    public string Login { get; set; }
+    public required string Login { get; set; }
     
     [Column("password")]
-    public string Password { get; set; }
+    public required string Password { get; set; }
     
     [Column("created_date")]
     [Required, DatabaseGenerated(DatabaseGeneratedOption.Computed)]
     public DateTime CreatedDate { get; set; }
     
     [Column("user_group_id")]
-    public long UserGroupId { get; set; }
+    public required long UserGroupId { get; set; }
     
     [ForeignKey(nameof(UserGroupId))]
     public UserGroupEntity UserGroup { get; set; }
     
     [Column("user_state_id")]
-    public long UserStateId { get; set; }
+    public required long UserStateId { get; set; }
     
     [ForeignKey(nameof(UserStateId))]
     public UserStateEntity UserState { get; set; }
