@@ -29,4 +29,11 @@ public sealed class UserRepository : IUserRepository
 
         return userEntity;
     }
+
+    public async Task<UserEntity?> GetUserByLoginAsync(string userLogin)
+    {
+        return await _applicationContext.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Login == userLogin);
+    }
 }
