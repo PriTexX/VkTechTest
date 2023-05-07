@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using VkTechTest.Contracts.CreateUserEndpoint;
-using VkTechTest.Contracts.GetUserEndpoint;
+using VkTechTest.Contracts;
 using VkTechTest.Mappers;
 using VkTechTest.Models.Exceptions;
 using VkTechTest.Repositories.Interfaces;
@@ -59,6 +58,21 @@ public class UserController : ControllerBase
         catch (UserRegistrationDelayException err)
         {
             return new BadRequestObjectResult(new { error = err.Message });
+        }
+    }
+
+    [HttpDelete]
+    [Route("{login}")]
+    public async Task<IActionResult> DeleteUserAsync(DeleteUserRequest request)
+    {
+        try
+        {
+            await _userRepository.DeleteUserByLoginAsync(request.Login);
+            return new OkObjectResult(new { deletedUserLogin = request.Login });
+        }
+        catch (UserNotFoundException err)
+        {
+            return new BadRequestObjectResult(new {error = err.Message});
         }
     }
 }
