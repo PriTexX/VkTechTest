@@ -36,4 +36,27 @@ public sealed class UserRepository : IUserRepository
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Login == userLogin);
     }
+
+    public async Task<UserEntity?> GetUserWithStateAndGroupByLoginAsync(string login)
+    {
+        return await _applicationContext.Users
+            .AsNoTracking()
+            .Include(u => u.UserState)
+            .Include(u => u.UserGroup)
+            .FirstOrDefaultAsync(u => u.Login == login);
+    }
+
+    public async IAsyncEnumerable<UserEntity> GetAllUsersWithStateAndGroupAsync()
+    {
+        var users = _applicationContext.Users
+            .AsNoTrackingWithIdentityResolution()
+            .Include(u => u.UserState)
+            .Include(u => u.UserGroup)
+            .AsAsyncEnumerable();
+        
+        await foreach (var user in users)
+        {
+            yield return user;
+        }
+    }
 }
