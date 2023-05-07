@@ -9,7 +9,7 @@ public sealed class SHA256PasswordHasher : IPasswordHasher
     private const int KeySize = 32;
     private const int IterationsCount = 100;
     
-    public string GetHash(string password)
+    public string Hash(string password)
     {
         using var algorithm = new Rfc2898DeriveBytes(
             password, 
