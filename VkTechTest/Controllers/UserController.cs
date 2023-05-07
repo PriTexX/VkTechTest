@@ -45,7 +45,7 @@ public class UserController : ControllerBase
     {
         try
         {
-            var user = await _userService.Register(
+            var user = await _userService.RegisterAsync(
                 request.Login,
                 request.Password);
 

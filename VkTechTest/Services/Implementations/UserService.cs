@@ -17,7 +17,7 @@ public sealed class UserService : IUserService
         _userRepository = userRepository;
     }
 
-    public async Task<UserEntity> Register(string login, string password)
+    public async Task<UserEntity> RegisterAsync(string login, string password)
     {
         var dbUser = await _userRepository.GetUserByLoginAsync(login);
         
@@ -39,7 +39,7 @@ public sealed class UserService : IUserService
         return await _userRepository.SaveUserAsync(newUser); // Не ловлю тут возможное исключение, т.к. оно пойдет дальше по стеку вызова и будет обработано вызывающим кодом(в моем случае контроллером). 
     }
 
-    public async Task<UserEntity?> Login(string login, string password)
+    public async Task<UserEntity?> AuthenticateAsync(string login, string password)
     {
         var user = await _userRepository.GetUserByLoginAsync(login);
 
