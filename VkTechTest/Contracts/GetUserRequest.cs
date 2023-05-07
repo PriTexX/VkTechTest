@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace VkTechTest.Contracts.GetUserEndpoint;
+namespace VkTechTest.Contracts;
 
 public sealed class GetUserRequest
 {

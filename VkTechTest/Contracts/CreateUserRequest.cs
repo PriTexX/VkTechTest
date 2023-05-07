@@ -1,4 +1,4 @@
-﻿namespace VkTechTest.Contracts.CreateUserEndpoint;
+﻿namespace VkTechTest.Contracts;
 
 public sealed class CreateUserRequest
 {
