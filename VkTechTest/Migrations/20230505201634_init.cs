@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using VkTechTest.Models.Enums;
+using VkTechTest.Services.Implementations;
 
 #nullable disable
 
@@ -109,6 +110,13 @@ namespace VkTechTest.Migrations
             
             migrationBuilder.Sql($"INSERT INTO user_state (id, code, description) VALUES ({activeUserStateNumber}, {activeUserStateNumber}, 'Active user state')");
             migrationBuilder.Sql($"INSERT INTO user_state (id, code, description) VALUES ({blockedUserStateNumber}, {blockedUserStateNumber}, 'Blocked user state')");
+
+            var passwordHasher = new SHA256PasswordHasher();
+            var hashedPassword = passwordHasher.Hash("admin");
+            var adminLogin = "admin";
+
+            migrationBuilder.Sql(
+                $"INSERT INTO users (login, password, user_group_id, user_state_id) VALUES ({adminLogin}, {hashedPassword}, {adminGroupNumber}, {activeUserStateNumber})");
         }
 
         /// <inheritdoc />
