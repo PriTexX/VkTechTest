@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using VkTechTest;
 using VkTechTest.Database;
 using VkTechTest.Repositories.Implementations;
 using VkTechTest.Repositories.Interfaces;
@@ -29,6 +30,12 @@ builder.Services.AddSwaggerGen(s =>
 
 builder.Services.AddAuthentication("BasicAuthentication")
     .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
+
+builder.Services
+    .AddOptions<ApplicationOptions>()
+    .BindConfiguration(ApplicationOptions.SectionName)
+    .ValidateOnStart()
+    .ValidateDataAnnotations();
 
 var app = builder.Build();
 
