@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using VkTechTest.Contracts;
 using VkTechTest.Mappers;
 using VkTechTest.Models.Enums;
@@ -21,10 +22,10 @@ public class UserController : ControllerBase
         _userService = userService;
     }
 
-    [HttpGet("{login}")]
-    public async Task<IActionResult> GetUserAsync([FromRoute]GetUserRequest request)
+    [HttpGet("{login:alpha}")]
+    public async Task<IActionResult> GetUserAsync(string login)
     {
-        var user = await _userRepository.GetUserWithStateAndGroupByLoginAsync(request.Login);
+        var user = await _userRepository.GetUserWithStateAndGroupByLoginAsync(login);
 
         if (user is null)
         {
@@ -70,13 +71,13 @@ public class UserController : ControllerBase
     }
 
     [HttpDelete]
-    [Route("{login}")]
-    public async Task<IActionResult> DeleteUserAsync([FromRoute]DeleteUserRequest request)
+    [Route("{login:alpha}")]
+    public async Task<IActionResult> DeleteUserAsync(string login)
     {
         try
         {
-            await _userRepository.DeleteUserByLoginAsync(request.Login);
-            return new OkObjectResult(new { deletedUserLogin = request.Login });
+            await _userRepository.DeleteUserByLoginAsync(login);
+            return new OkObjectResult(new { deletedUserLogin = login });
         }
         catch (UserNotFoundException err)
         {

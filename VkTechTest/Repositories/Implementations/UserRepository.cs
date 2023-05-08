@@ -22,7 +22,7 @@ public sealed class UserRepository : IUserRepository
 
         if (userExists)
         {
-            throw new UserAlreadyExistsException(userEntity.Id);
+            throw new UserAlreadyExistsException(userEntity.Login);
         }
 
         _applicationContext.Users.Add(userEntity);
