@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using VkTechTest.Contracts;
 using VkTechTest.Mappers;
@@ -10,6 +12,7 @@ using VkTechTest.Services.Interfaces;
 namespace VkTechTest.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
 public class UserController : ControllerBase
 {
@@ -27,6 +30,14 @@ public class UserController : ControllerBase
     [HttpGet("{login:alpha}")]
     public async Task<IActionResult> GetUserAsync(string login)
     {
+        var userLogin = User.Claims.First(c => c.Type == "login").Value;
+        var isAdmin = User.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
+        
+        if (!isAdmin && userLogin != login)
+        {
+            return new BadRequestObjectResult(new {error = "Cannot access other users information"});
+        }
+        
         var user = await _userRepository.GetUserWithStateAndGroupByLoginAsync(login);
 
         if (user is null)
@@ -38,6 +49,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetAllUsersAsync([FromQuery]GetAllUsersRequest request)
     {
         if (request.PageSize > _options.CurrentValue.MaxPageSize)
@@ -50,6 +62,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
+    [AllowAnonymous]
     public async Task<IActionResult> CreateUserAsync(CreateUserRequest request)
     {
         try
@@ -81,6 +94,14 @@ public class UserController : ControllerBase
     [Route("{login:alpha}")]
     public async Task<IActionResult> DeleteUserAsync(string login)
     {
+        var userLogin = User.Claims.First(c => c.Type == "login").Value;
+        var isAdmin = User.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
+
+        if (!isAdmin && userLogin != login)
+        {
+            return new BadRequestObjectResult(new {error = "Cannot delete another user"});
+        }
+        
         try
         {
             await _userRepository.DeleteUserByLoginAsync(login);

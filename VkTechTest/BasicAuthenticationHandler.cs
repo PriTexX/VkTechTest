@@ -41,7 +41,7 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
         
         var claims = new List<Claim>
         {
-            new Claim("username", credentials[0]), 
+            new Claim("login", credentials[0]), 
             new Claim(ClaimTypes.Role, "User"),
         };
 
