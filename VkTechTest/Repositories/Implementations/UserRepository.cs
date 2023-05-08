@@ -47,12 +47,15 @@ public sealed class UserRepository : IUserRepository
             .FirstOrDefaultAsync(u => u.Login == login);
     }
 
-    public async IAsyncEnumerable<UserEntity> GetAllUsersWithStateAndGroupAsync()
+    public async IAsyncEnumerable<UserEntity> GetAllUsersWithStateAndGroupAsync(int take, int offset)
     {
         var users = _applicationContext.Users
             .AsNoTrackingWithIdentityResolution()
             .Include(u => u.UserState)
             .Include(u => u.UserGroup)
+            .OrderBy(u => u.Id)
+            .Skip(offset)
+            .Take(take)
             .AsAsyncEnumerable();
         
         await foreach (var user in users)

@@ -10,7 +10,7 @@ public interface IUserRepository
 
     public Task<UserEntity?> GetUserWithStateAndGroupByLoginAsync(string login);
 
-    public IAsyncEnumerable<UserEntity> GetAllUsersWithStateAndGroupAsync();
+    public IAsyncEnumerable<UserEntity> GetAllUsersWithStateAndGroupAsync(int take, int offset);
 
     public Task DeleteUserByLoginAsync(string login);
 }

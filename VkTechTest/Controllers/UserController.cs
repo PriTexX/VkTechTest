@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using VkTechTest.Contracts;
 using VkTechTest.Mappers;
+using VkTechTest.Models.Enums;
 using VkTechTest.Models.Exceptions;
 using VkTechTest.Repositories.Interfaces;
 using VkTechTest.Services.Interfaces;
@@ -21,7 +22,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{login}")]
-    public async Task<IActionResult> GetUserAsync(GetUserRequest request)
+    public async Task<IActionResult> GetUserAsync([FromRoute]GetUserRequest request)
     {
         var user = await _userRepository.GetUserWithStateAndGroupByLoginAsync(request.Login);
 
@@ -34,9 +35,9 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllUsersAsync()
+    public async Task<IActionResult> GetAllUsersAsync(GetAllUsersRequest request)
     {
-        var users = _userRepository.GetAllUsersWithStateAndGroupAsync(); 
+        var users = _userRepository.GetAllUsersWithStateAndGroupAsync(request.PageSize, request.OffSet); 
         return Ok(UserMapper.MapFromDBUsers(users)); // Здесь не будет блокировки, даже без вызова await foreach
     }
 
@@ -49,7 +50,14 @@ public class UserController : ControllerBase
                 request.Login,
                 request.Password);
 
-            return Ok(UserMapper.MapFromDBUser(user));
+            return Ok(new CreateUserResponse
+            {
+                Id = user.Id,
+                CreatedDate = user.CreatedDate,
+                Login = user.Login,
+                UserGroup = UserGroupType.User,
+                UserState = UserStateType.Active
+            });
         }
         catch (UserAlreadyExistsException err)
         {
@@ -63,7 +71,7 @@ public class UserController : ControllerBase
 
     [HttpDelete]
     [Route("{login}")]
-    public async Task<IActionResult> DeleteUserAsync(DeleteUserRequest request)
+    public async Task<IActionResult> DeleteUserAsync([FromRoute]DeleteUserRequest request)
     {
         try
         {
