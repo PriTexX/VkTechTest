@@ -1,4 +1,6 @@
-﻿namespace VkTechTest.Contracts;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace VkTechTest.Contracts;
 
 /// <summary>
 /// Запрос на создание нового пользователя
@@ -13,5 +15,6 @@ public sealed class CreateUserRequest
     /// <summary>
     /// Пароль
     /// </summary>
+    [Range(6, 60)]
     public required string Password { get; init; }
 }
