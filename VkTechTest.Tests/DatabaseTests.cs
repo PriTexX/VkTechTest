@@ -6,12 +6,12 @@ using VkTechTest.Database;
 
 namespace VkTechTest.Tests;
 
-public abstract class DatabaseTests : IDisposable
+public class DatabaseTests : IDisposable
 {
-    protected static string ConnectionString;
+    public static string ConnectionString;
     private static IContainer _pgContainer;
 
-    static DatabaseTests()
+    public DatabaseTests()
     {
         const string postgresPwd = "pgpwd";
 
@@ -44,13 +44,20 @@ public abstract class DatabaseTests : IDisposable
         dbContext.Dispose();
     }
 
-    protected static ApplicationContext CreateDbContext()
+    public static ApplicationContext CreateDbContext()
     {
         var builder = new DbContextOptionsBuilder<ApplicationContext>()
             .UseNpgsql(ConnectionString);
         var dbContext = new ApplicationContext(builder.Options);
 
         return dbContext;
+    }
+
+    public static async Task ClearDatabase(ApplicationContext ctx)
+    {
+        await ctx.Users
+            .Where(u => u.Login != "admin")
+            .ExecuteDeleteAsync();
     }
     
     public void Dispose()
