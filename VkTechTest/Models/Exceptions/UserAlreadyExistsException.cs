@@ -2,6 +2,6 @@
 
 public class UserAlreadyExistsException : Exception
 {
-    public UserAlreadyExistsException(long userId) : base($"User with id: {userId} already exists")
+    public UserAlreadyExistsException(string userLogin) : base($"User with login: '{userLogin}' already exists")
     {}
 }
