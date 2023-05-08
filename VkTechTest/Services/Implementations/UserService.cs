@@ -8,6 +8,8 @@ namespace VkTechTest.Services.Implementations;
 
 public sealed class UserService : IUserService
 {
+    private static long BlockedStateId = -1;
+
     private readonly IPasswordHasher _passwordHasher;
     private readonly IUserRepository _userRepository;
 
@@ -49,5 +51,15 @@ public sealed class UserService : IUserService
         }
 
         return _passwordHasher.Verify(user.Password, password) ? user : null;
+    }
+
+    public async Task RemoveUserAsync(string login)
+    {
+        if (BlockedStateId == -1)
+        {
+            BlockedStateId = await _userRepository.GetStateIdAsync(UserStateType.Blocked);
+        }
+
+        await _userRepository.ChangeUserStateAsync(login, BlockedStateId);
     }
 }

@@ -64,22 +64,25 @@ public sealed class UserRepository : IUserRepository
         }
     }
 
-    public async Task DeleteUserByLoginAsync(string login)
+    public async Task ChangeUserStateAsync(string login, long userStateId)
     {
-        var blockedStateId = await _applicationContext.UserStates
-            .AsNoTracking()
-            .Where(s => s.Code == UserStateType.Blocked)
-            .Select(u => u.Id)
-            .FirstAsync(); // Если в базе не окажется стейта Blocked, то в таком случае это исключительная ситуация. Приложение залогирует ошибку, вернет пользователю 500 код и продолжит дальше обрабатывать запросы
-        
         var rowsAffected = await _applicationContext.Users
             .Where(u => u.Login == login)
             .ExecuteUpdateAsync(p => p
-                .SetProperty(u => u.UserStateId, blockedStateId));
+                .SetProperty(u => u.UserStateId, userStateId));
 
         if (rowsAffected == 0)
         {
             throw new UserNotFoundException(login);
         }
+    }
+
+    public async Task<long> GetStateIdAsync(UserStateType userStateType)
+    {
+        return await _applicationContext.UserStates
+            .AsNoTracking()
+            .Where(s => s.Code == userStateType)
+            .Select(u => u.Id)
+            .FirstAsync(); // Если в базе не окажется стейта, то в таком случае это исключительная ситуация. Приложение залогирует ошибку, вернет пользователю 500 код и продолжит дальше обрабатывать запросы 
     }
 }

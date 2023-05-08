@@ -1,4 +1,5 @@
 ﻿using VkTechTest.Database.Models;
+using VkTechTest.Models.Enums;
 
 namespace VkTechTest.Repositories.Interfaces;
 
@@ -12,5 +13,7 @@ public interface IUserRepository
 
     public IAsyncEnumerable<UserEntity> GetAllUsersWithStateAndGroupAsync(int take, int offset);
 
-    public Task DeleteUserByLoginAsync(string login);
+    public Task ChangeUserStateAsync(string login, long userStateId);
+
+    public Task<long> GetStateIdAsync(UserStateType userStateType);
 }

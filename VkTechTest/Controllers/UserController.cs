@@ -104,7 +104,7 @@ public class UserController : ControllerBase
         
         try
         {
-            await _userRepository.DeleteUserByLoginAsync(login);
+            await _userService.RemoveUserAsync(login);
             return new OkObjectResult(new { deletedUserLogin = login });
         }
         catch (UserNotFoundException err)
