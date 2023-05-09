@@ -1,9 +1,9 @@
 ﻿using VkTechTest.Database.Models;
 using VkTechTest.Models.Enums;
 
-namespace VkTechTest.Repositories.Interfaces;
+namespace VkTechTest.DAO.Interfaces;
 
-public interface IUserRepository
+public interface IUserDAO
 {
     public Task<UserEntity> SaveUserAsync(UserEntity userEntity);
 

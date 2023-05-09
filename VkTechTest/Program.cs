@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using VkTechTest;
+using VkTechTest.DAO.Implementations;
+using VkTechTest.DAO.Interfaces;
 using VkTechTest.Database;
-using VkTechTest.Repositories.Implementations;
-using VkTechTest.Repositories.Interfaces;
 using VkTechTest.Services.Implementations;
 using VkTechTest.Services.Interfaces;
 
@@ -17,7 +17,7 @@ builder.Services.AddDbContext<ApplicationContext>(c =>
     c.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection")));
 
 builder.Services.AddSingleton<IPasswordHasher, SHA256PasswordHasher>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserDAO, UserDao>();
 builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddControllers()

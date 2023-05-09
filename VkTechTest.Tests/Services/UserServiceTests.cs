@@ -1,8 +1,8 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using VkTechTest.DAO.Implementations;
 using VkTechTest.Models.Enums;
 using VkTechTest.Models.Exceptions;
-using VkTechTest.Repositories.Implementations;
 using VkTechTest.Services.Implementations;
 using Xunit.Abstractions;
 using Xunit.Sdk;
@@ -23,8 +23,8 @@ public class UserServiceTests : DatabaseTestsHelper
 
         await ClearDatabase(ctx);
         
-        var userRepository = new UserRepository(ctx);
-        var sut = new UserService(new SHA256PasswordHasher(), userRepository);
+        var userDao = new UserDao(ctx);
+        var sut = new UserService(new SHA256PasswordHasher(), userDao);
 
         // Act
 
@@ -50,8 +50,8 @@ public class UserServiceTests : DatabaseTestsHelper
         
         await ClearDatabase(ctx);
         
-        var userRepository = new UserRepository(ctx);
-        var sut = new UserService(new SHA256PasswordHasher(), userRepository);
+        var userDao = new UserDao(ctx);
+        var sut = new UserService(new SHA256PasswordHasher(), userDao);
         await sut.RegisterAsync("testUser", "withTestPassword");
         
         // Act
@@ -72,8 +72,8 @@ public class UserServiceTests : DatabaseTestsHelper
         
         await ClearDatabase(ctx);
         
-        var userRepository = new UserRepository(ctx);
-        var sut = new UserService(new SHA256PasswordHasher(), userRepository);
+        var userDao = new UserDao(ctx);
+        var sut = new UserService(new SHA256PasswordHasher(), userDao);
         await sut.RegisterAsync("testUser", "withTestPassword");
         Thread.Sleep(5001); 
         
@@ -95,8 +95,8 @@ public class UserServiceTests : DatabaseTestsHelper
         
         await ClearDatabase(ctx);
         
-        var userRepository = new UserRepository(ctx);
-        var sut = new UserService(new SHA256PasswordHasher(), userRepository);
+        var userDao = new UserDao(ctx);
+        var sut = new UserService(new SHA256PasswordHasher(), userDao);
         await sut.RegisterAsync("testUser", "withTestPassword");
 
         // Act
@@ -122,8 +122,8 @@ public class UserServiceTests : DatabaseTestsHelper
         
         await ClearDatabase(ctx);
         
-        var userRepository = new UserRepository(ctx);
-        var sut = new UserService(new SHA256PasswordHasher(), userRepository);
+        var userDao = new UserDao(ctx);
+        var sut = new UserService(new SHA256PasswordHasher(), userDao);
         
         // Act
         

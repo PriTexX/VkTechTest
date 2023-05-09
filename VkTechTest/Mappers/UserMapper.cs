@@ -3,6 +3,9 @@ using VkTechTest.Database.Models;
 
 namespace VkTechTest.Mappers;
 
+/// <summary>
+/// Маппер из <see cref="UserEntity"/> в <see cref="UserResponse"/>
+/// </summary>
 public static class UserMapper
 {
     public static UserResponse MapFromDBUser(UserEntity dbUser)

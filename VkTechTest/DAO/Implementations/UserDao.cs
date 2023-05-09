@@ -1,17 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using VkTechTest.DAO.Interfaces;
 using VkTechTest.Database;
 using VkTechTest.Database.Models;
 using VkTechTest.Models.Enums;
 using VkTechTest.Models.Exceptions;
-using VkTechTest.Repositories.Interfaces;
 
-namespace VkTechTest.Repositories.Implementations;
+namespace VkTechTest.DAO.Implementations;
 
-public sealed class UserRepository : IUserRepository
+public sealed class UserDao : IUserDAO
 {
     private readonly ApplicationContext _applicationContext;
 
-    public UserRepository(ApplicationContext applicationContext)
+    public UserDao(ApplicationContext applicationContext)
     {
         _applicationContext = applicationContext;
     }

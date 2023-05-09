@@ -50,7 +50,7 @@ namespace VkTechTest.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     login = table.Column<string>(type: "text", nullable: false),
                     password = table.Column<string>(type: "text", nullable: false),
-                    created_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    created_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"), // Добавил дефолтное значение NOW(), чтобы самому не заполнять его
                     user_group_id = table.Column<long>(type: "bigint", nullable: false),
                     user_state_id = table.Column<long>(type: "bigint", nullable: false)
                 },
@@ -105,7 +105,7 @@ namespace VkTechTest.Migrations
             int activeUserStateNumber = (int)UserStateType.Active;
             int blockedUserStateNumber = (int)UserStateType.Blocked;
             
-            migrationBuilder.Sql($"INSERT INTO user_groups (id, code, description) VALUES ({adminGroupNumber}, {adminGroupNumber}, 'Admin group')");
+            migrationBuilder.Sql($"INSERT INTO user_groups (id, code, description) VALUES ({adminGroupNumber}, {adminGroupNumber}, 'Admin group')"); // id записи и числовое представление Enum здесь одинаковые, чтобы легче было сопоставлять их
             migrationBuilder.Sql($"INSERT INTO user_groups (id, code, description) VALUES ({userGroupNumber}, {userGroupNumber}, 'User group')");
             
             migrationBuilder.Sql($"INSERT INTO user_states (id, code, description) VALUES ({activeUserStateNumber}, {activeUserStateNumber}, 'Active user state')");

@@ -1,7 +1,7 @@
-﻿using VkTechTest.Database.Models;
+﻿using VkTechTest.DAO.Interfaces;
+using VkTechTest.Database.Models;
 using VkTechTest.Models.Enums;
 using VkTechTest.Models.Exceptions;
-using VkTechTest.Repositories.Interfaces;
 using VkTechTest.Services.Interfaces;
 
 namespace VkTechTest.Services.Implementations;
@@ -11,17 +11,17 @@ public sealed class UserService : IUserService
     private static long BlockedStateId = -1;
 
     private readonly IPasswordHasher _passwordHasher;
-    private readonly IUserRepository _userRepository;
+    private readonly IUserDAO _userDao;
 
-    public UserService(IPasswordHasher passwordHasher, IUserRepository userRepository)
+    public UserService(IPasswordHasher passwordHasher, IUserDAO userDao)
     {
         _passwordHasher = passwordHasher;
-        _userRepository = userRepository;
+        _userDao = userDao;
     }
 
     public async Task<UserEntity> RegisterAsync(string login, string password)
     {
-        var dbUser = await _userRepository.GetUserByLoginAsync(login);
+        var dbUser = await _userDao.GetUserByLoginAsync(login);
         
         if (dbUser is not null && DateTime.UtcNow - dbUser.CreatedDate.ToUniversalTime() < TimeSpan.FromSeconds(5))
         {
@@ -38,12 +38,12 @@ public sealed class UserService : IUserService
             UserStateId = (int)UserStateType.Active,
         };
         
-        return await _userRepository.SaveUserAsync(newUser); // Не ловлю тут возможное исключение, т.к. оно пойдет дальше по стеку вызова и будет обработано вызывающим кодом(в моем случае контроллером). 
+        return await _userDao.SaveUserAsync(newUser); // Не ловлю тут возможное исключение, т.к. оно пойдет дальше по стеку вызова и будет обработано вызывающим кодом(в моем случае контроллером). 
     }
 
     public async Task<UserEntity?> AuthenticateAsync(string login, string password)
     {
-        var user = await _userRepository.GetUserWithStateAndGroupByLoginAsync(login);
+        var user = await _userDao.GetUserWithStateAndGroupByLoginAsync(login);
 
         if (user is null)
         {
@@ -57,9 +57,9 @@ public sealed class UserService : IUserService
     {
         if (BlockedStateId == -1)
         {
-            BlockedStateId = await _userRepository.GetStateIdAsync(UserStateType.Blocked);
+            BlockedStateId = await _userDao.GetStateIdAsync(UserStateType.Blocked);
         }
 
-        await _userRepository.ChangeUserStateAsync(login, BlockedStateId);
+        await _userDao.ChangeUserStateAsync(login, BlockedStateId);
     }
 }

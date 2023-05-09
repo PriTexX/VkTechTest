@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using VkTechTest.Contracts;
 using VkTechTest.Contracts.Common;
+using VkTechTest.DAO.Interfaces;
 using VkTechTest.Mappers;
 using VkTechTest.Models.Enums;
 using VkTechTest.Models.Exceptions;
-using VkTechTest.Repositories.Interfaces;
 using VkTechTest.Services.Interfaces;
 
 namespace VkTechTest.Controllers;
@@ -20,13 +20,13 @@ namespace VkTechTest.Controllers;
 [Route("api/[controller]")]
 public class UserController : ControllerBase
 {
-    private readonly IUserRepository _userRepository;
+    private readonly IUserDAO _userDao;
     private readonly IUserService _userService;
     private readonly IOptionsMonitor<ApplicationOptions> _options;
 
-    public UserController(IUserRepository userRepository, IUserService userService, IOptionsMonitor<ApplicationOptions> options)
+    public UserController(IUserDAO userDao, IUserService userService, IOptionsMonitor<ApplicationOptions> options)
     {
-        _userRepository = userRepository;
+        _userDao = userDao;
         _userService = userService;
         _options = options;
     }
@@ -50,7 +50,7 @@ public class UserController : ControllerBase
             return new BadRequestObjectResult(new ErrorResponse("Cannot access other users information")){StatusCode = 403};
         }
         
-        var user = await _userRepository.GetUserWithStateAndGroupByLoginAsync(login);
+        var user = await _userDao.GetUserWithStateAndGroupByLoginAsync(login);
 
         if (user is null)
         {
@@ -79,7 +79,7 @@ public class UserController : ControllerBase
             return new BadRequestObjectResult(new ErrorResponse($"Cannot set page size more than {_options.CurrentValue.MaxPageSize}"));
         }
         
-        var users = _userRepository.GetAllUsersWithStateAndGroupAsync(request.PageSize, request.OffSet); 
+        var users = _userDao.GetAllUsersWithStateAndGroupAsync(request.PageSize, request.OffSet); 
         return Ok(UserMapper.MapFromDBUsers(users)); // Здесь не будет блокировки, даже без вызова await foreach
     }
 
