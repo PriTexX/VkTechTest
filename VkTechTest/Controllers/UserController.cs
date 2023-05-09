@@ -23,12 +23,14 @@ public class UserController : ControllerBase
     private readonly IUserDAO _userDao;
     private readonly IUserService _userService;
     private readonly IOptionsMonitor<ApplicationOptions> _options;
+    private readonly ILogger<UserController> _logger;
 
-    public UserController(IUserDAO userDao, IUserService userService, IOptionsMonitor<ApplicationOptions> options)
+    public UserController(IUserDAO userDao, IUserService userService, IOptionsMonitor<ApplicationOptions> options, ILogger<UserController> logger)
     {
         _userDao = userDao;
         _userService = userService;
         _options = options;
+        _logger = logger;
     }
 
     /// <summary>
@@ -45,19 +47,29 @@ public class UserController : ControllerBase
     [HttpGet("{login:alpha}")]
     public async Task<IActionResult> GetUserAsync(string login)
     {
-        if (NotAdminIsTryingToAccessAnotherUser(login))
+        try
         {
-            return new BadRequestObjectResult(new ErrorResponse("Cannot access other users information")){StatusCode = 403};
-        }
+            if (NotAdminIsTryingToAccessAnotherUser(login))
+            {
+                return new BadRequestObjectResult(new ErrorResponse("Cannot access other users information")){StatusCode = 403};
+            }
         
-        var user = await _userDao.GetUserWithStateAndGroupByLoginAsync(login);
+            var user = await _userDao.GetUserWithStateAndGroupByLoginAsync(login);
 
-        if (user is null)
-        {
-            return NotFound();
+            if (user is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(UserMapper.MapFromDBUser(user));
         }
-
-        return Ok(UserMapper.MapFromDBUser(user));
+        catch (Exception err)
+        {
+            _logger.LogError(err, "Unexpected behaviour in request in action: {actionName} with traceId: {traceId}", 
+                nameof(GetUserAsync), HttpContext.TraceIdentifier);
+            
+            return new StatusCodeResult(500);
+        }
     }
 
     /// <summary>
@@ -74,13 +86,23 @@ public class UserController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetAllUsersAsync([FromQuery]GetAllUsersRequest request)
     {
-        if (request.PageSize > _options.CurrentValue.MaxPageSize)
+        try
         {
-            return new BadRequestObjectResult(new ErrorResponse($"Cannot set page size more than {_options.CurrentValue.MaxPageSize}"));
-        }
+            if (request.PageSize > _options.CurrentValue.MaxPageSize)
+            {
+                return new BadRequestObjectResult(new ErrorResponse($"Cannot set page size more than {_options.CurrentValue.MaxPageSize}"));
+            }
         
-        var users = _userDao.GetAllUsersWithStateAndGroupAsync(request.PageSize, request.OffSet); 
-        return Ok(UserMapper.MapFromDBUsers(users)); // Здесь не будет блокировки, даже без вызова await foreach
+            var users = _userDao.GetAllUsersWithStateAndGroupAsync(request.PageSize, request.OffSet); 
+            return Ok(UserMapper.MapFromDBUsers(users)); // Здесь не будет блокировки, даже без вызова await foreach
+        }
+        catch (Exception err)
+        {
+            _logger.LogError(err, "Unexpected behaviour in request in action: {actionName} with traceId: {traceId}", 
+                nameof(GetAllUsersAsync), HttpContext.TraceIdentifier);
+            
+            return new StatusCodeResult(500);
+        }
     }
 
     /// <summary>
@@ -108,7 +130,7 @@ public class UserController : ControllerBase
                 Login = user.Login,
                 UserGroup = UserGroupType.User,
                 UserState = UserStateType.Active
-            }){StatusCode = StatusCodes.Status201Created};
+            }) { StatusCode = StatusCodes.Status201Created };
         }
         catch (UserAlreadyExistsException err)
         {
@@ -117,6 +139,13 @@ public class UserController : ControllerBase
         catch (UserRegistrationDelayException err)
         {
             return new BadRequestObjectResult(new { error = err.Message });
+        }
+        catch (Exception err)
+        {
+            _logger.LogError(err, "Unexpected behaviour in request in action: {actionName} with traceId: {traceId}", 
+                nameof(CreateUserAsync), HttpContext.TraceIdentifier);
+            
+            return new StatusCodeResult(500);
         }
     }
 
@@ -134,19 +163,26 @@ public class UserController : ControllerBase
     [Route("{login:alpha}")]
     public async Task<IActionResult> DeleteUserAsync(string login)
     {
-        if (NotAdminIsTryingToAccessAnotherUser(login))
-        {
-            return new BadRequestObjectResult(new ErrorResponse("Cannot delete another user"));
-        }
-        
         try
         {
+            if (NotAdminIsTryingToAccessAnotherUser(login))
+            {
+                return new BadRequestObjectResult(new ErrorResponse("Cannot delete another user"));
+            }
+
             await _userService.RemoveUserAsync(login);
             return new OkObjectResult(new { deletedUserLogin = login });
         }
         catch (UserNotFoundException err)
         {
-            return new BadRequestObjectResult(new {error = err.Message});
+            return new BadRequestObjectResult(new { error = err.Message });
+        }
+        catch (Exception err)
+        {
+            _logger.LogError(err, "Unexpected behaviour in request in action: {actionName} with traceId: {traceId}", 
+                nameof(DeleteUserAsync), HttpContext.TraceIdentifier);
+            
+            return new StatusCodeResult(500);
         }
     }
 
