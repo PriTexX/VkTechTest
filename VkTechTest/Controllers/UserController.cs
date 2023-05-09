@@ -37,18 +37,17 @@ public class UserController : ControllerBase
     /// <remarks>Пользователь не может получить информацию о другом пользователе(за исключением админа)</remarks>
     /// <param name="login">Логин, указанный при регистрации</param>
     /// <returns>Информацию о пользователе</returns>
-    /// <response code="200">Пользователь</response>
+    /// <response code="200">Успешное завершение</response>
+    /// <response code="403">Попытка доступа к другому пользователю</response>
     /// <response code="404">Не найден пользователь с указанным логином</response>
     [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status403Forbidden)]
     [HttpGet("{login:alpha}")]
     public async Task<IActionResult> GetUserAsync(string login)
     {
-        var userLogin = User.Claims.First(c => c.Type == "login").Value;
-        var isAdmin = User.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
-        
-        if (!isAdmin && userLogin != login)
+        if (NotAdminIsTryingToAccessAnotherUser(login))
         {
-            return new BadRequestObjectResult(new {error = "Cannot access other users information"});
+            return new BadRequestObjectResult(new ErrorResponse("Cannot access other users information")){StatusCode = 403};
         }
         
         var user = await _userRepository.GetUserWithStateAndGroupByLoginAsync(login);
@@ -66,15 +65,18 @@ public class UserController : ControllerBase
     /// </summary>
     /// <remarks>Только админ может получать список</remarks>
     /// <returns>Список пользователей</returns>
-    /// <response code="200">Список пользователей</response>
+    /// <response code="200">Успешное завершение</response>
+    /// <response code="400"></response>
+    /// <response code="403">Ошибка доступа</response>
     [ProducesResponseType(typeof(List<UserResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     [HttpGet]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetAllUsersAsync([FromQuery]GetAllUsersRequest request)
     {
         if (request.PageSize > _options.CurrentValue.MaxPageSize)
         {
-            return new BadRequestObjectResult(new { error = $"Cannot set page size more than {_options.CurrentValue.MaxPageSize}" });
+            return new BadRequestObjectResult(new ErrorResponse($"Cannot set page size more than {_options.CurrentValue.MaxPageSize}"));
         }
         
         var users = _userRepository.GetAllUsersWithStateAndGroupAsync(request.PageSize, request.OffSet); 
@@ -85,8 +87,10 @@ public class UserController : ControllerBase
     /// Создает нового пользователя
     /// </summary>
     /// <returns>Созданный пользователь</returns>
-    /// <response code="201"></response>
+    /// <response code="201">Успешное завершение</response>
+    /// <response code="409">Пользователь с таким логином уже существует</response>
     [ProducesResponseType(typeof(CreateUserResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
     [HttpPost]
     [AllowAnonymous]
     public async Task<IActionResult> CreateUserAsync([FromBody]CreateUserRequest request)
@@ -108,7 +112,7 @@ public class UserController : ControllerBase
         }
         catch (UserAlreadyExistsException err)
         {
-            return new BadRequestObjectResult(new { error = err.Message });
+            return new ConflictObjectResult(new { error = err.Message });
         }
         catch (UserRegistrationDelayException err)
         {
@@ -122,16 +126,17 @@ public class UserController : ControllerBase
     /// <remarks>Пользователь может удалить только свой аккаунт (исключение - админ)</remarks>
     /// <param name="login">Логин</param>
     /// <returns>Логин удаленного пользователя</returns>
+    /// <response code="200">Успешное завершение</response>
+    /// <response code="404">Пользователь не найден</response>
+    /// <response code="403">Попытка удалить другого пользователя</response>
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status403Forbidden)]
     [HttpDelete]
     [Route("{login:alpha}")]
     public async Task<IActionResult> DeleteUserAsync(string login)
     {
-        var userLogin = User.Claims.First(c => c.Type == "login").Value;
-        var isAdmin = User.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
-
-        if (!isAdmin && userLogin != login)
+        if (NotAdminIsTryingToAccessAnotherUser(login))
         {
-            return new BadRequestObjectResult(new {error = "Cannot delete another user"});
+            return new BadRequestObjectResult(new ErrorResponse("Cannot delete another user"));
         }
         
         try
@@ -143,5 +148,13 @@ public class UserController : ControllerBase
         {
             return new BadRequestObjectResult(new {error = err.Message});
         }
+    }
+
+    private bool NotAdminIsTryingToAccessAnotherUser(string accessedUserLogin)
+    {
+        var userLogin = User.Claims.First(c => c.Type == "login").Value;
+        var isAdmin = User.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
+
+        return !isAdmin && userLogin != accessedUserLogin;
     }
 }
