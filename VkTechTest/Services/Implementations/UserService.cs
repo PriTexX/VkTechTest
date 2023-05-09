@@ -8,7 +8,7 @@ namespace VkTechTest.Services.Implementations;
 
 public sealed class UserService : IUserService
 {
-    private static long BlockedStateId = -1;
+    private static long BlockedStateId = -1; // Id записи user_state с code = Blocked 
 
     private readonly IPasswordHasher _passwordHasher;
     private readonly IUserDAO _userDao;
@@ -55,7 +55,7 @@ public sealed class UserService : IUserService
 
     public async Task RemoveUserAsync(string login)
     {
-        if (BlockedStateId == -1)
+        if (BlockedStateId == -1) // Если Id раньше не был получен, то сделать запрос в бд и узнать его(это нужно, чтобы при каждом удалении не делать 2 запроса в бд)
         {
             BlockedStateId = await _userDao.GetStateIdAsync(UserStateType.Blocked);
         }
