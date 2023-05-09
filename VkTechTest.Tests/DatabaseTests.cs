@@ -6,6 +6,9 @@ using VkTechTest.Database;
 
 namespace VkTechTest.Tests;
 
+/// <summary>
+/// Запускает контейнер с тестовой базой данных PostgreSQL, применяет миграции и создает строку подключения к бд
+/// </summary>
 public class DatabaseTests : IDisposable
 {
     public static string ConnectionString;
@@ -44,6 +47,10 @@ public class DatabaseTests : IDisposable
         dbContext.Dispose();
     }
 
+    /// <summary>
+    /// Создает инстанс ApplicationContext
+    /// </summary>
+    /// <returns><see cref="ApplicationContext"/></returns>
     public static ApplicationContext CreateDbContext()
     {
         var builder = new DbContextOptionsBuilder<ApplicationContext>()
@@ -53,6 +60,10 @@ public class DatabaseTests : IDisposable
         return dbContext;
     }
 
+    /// <summary>
+    /// Очищает все записи в таблице users, кроме записи админа 
+    /// </summary>
+    /// <param name="ctx">Контекст базы данных</param>
     public static async Task ClearDatabase(ApplicationContext ctx)
     {
         await ctx.Users
