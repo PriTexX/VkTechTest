@@ -9,12 +9,12 @@ namespace VkTechTest.Tests;
 /// <summary>
 /// Запускает контейнер с тестовой базой данных PostgreSQL, применяет миграции и создает строку подключения к бд
 /// </summary>
-public class DatabaseTests : IDisposable
+public class PostgresContainerManager : IDisposable
 {
     public static string ConnectionString;
     private static IContainer _pgContainer;
 
-    public DatabaseTests()
+    public PostgresContainerManager()
     {
         const string postgresPwd = "pgpwd";
 
@@ -41,36 +41,14 @@ public class DatabaseTests : IDisposable
             Username = "postgres"
         }.ConnectionString;
 
-        var dbContext = CreateDbContext();
+        var builder = new DbContextOptionsBuilder<ApplicationContext>()
+            .UseNpgsql(ConnectionString);
+        var dbContext = new ApplicationContext(builder.Options);
         
         dbContext.Database.Migrate();
         dbContext.Dispose();
     }
 
-    /// <summary>
-    /// Создает инстанс ApplicationContext
-    /// </summary>
-    /// <returns><see cref="ApplicationContext"/></returns>
-    public static ApplicationContext CreateDbContext()
-    {
-        var builder = new DbContextOptionsBuilder<ApplicationContext>()
-            .UseNpgsql(ConnectionString);
-        var dbContext = new ApplicationContext(builder.Options);
-
-        return dbContext;
-    }
-
-    /// <summary>
-    /// Очищает все записи в таблице users, кроме записи админа 
-    /// </summary>
-    /// <param name="ctx">Контекст базы данных</param>
-    public static async Task ClearDatabase(ApplicationContext ctx)
-    {
-        await ctx.Users
-            .Where(u => u.Login != "admin")
-            .ExecuteDeleteAsync();
-    }
-    
     public void Dispose()
     {
         _pgContainer.DisposeAsync().GetAwaiter().GetResult();

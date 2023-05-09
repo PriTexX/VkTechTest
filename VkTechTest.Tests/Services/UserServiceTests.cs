@@ -6,13 +6,13 @@ using VkTechTest.Repositories.Implementations;
 using VkTechTest.Services.Implementations;
 using Xunit.Abstractions;
 using Xunit.Sdk;
-using static VkTechTest.Tests.DatabaseTests;
+using static VkTechTest.Tests.PostgresContainerManager;
 
 namespace VkTechTest.Tests.Services;
 
 
 // SUT - System Under Test
-public class UserServiceTests : IClassFixture<DatabaseTests>
+public class UserServiceTests : DatabaseTestsHelper
 {
     [Fact]
     public async Task Registering_New_User_Is_Succesfull()
